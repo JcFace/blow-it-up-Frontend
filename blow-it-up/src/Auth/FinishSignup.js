@@ -3,8 +3,9 @@ import React from 'react';
 class FinishSignup extends React.Component {
 
     state = {
+        user: this.props.user,
         full_name: '',
-        is_client: false,
+        is_client: true,
         bio: '',
         img_url: '',
         username: ''
@@ -27,12 +28,12 @@ class FinishSignup extends React.Component {
         console.log(value)
         if (value === 'yes'){
             this.setState({
-                is_client: true
+                is_client: false
             })
         }
         else {
             this.setState({
-                is_client: false
+                is_client: true
             })
         }
         
@@ -48,7 +49,7 @@ class FinishSignup extends React.Component {
             <input 
             type='radio'
             value='yes'
-            checked={this.state.is_client === true}
+            checked={this.state.is_client === false}
             onChange={this.handleIsClient}/>
             Yes 
             </label>
@@ -56,7 +57,7 @@ class FinishSignup extends React.Component {
             <input 
             type='radio'
             value='no'
-            checked={this.state.is_client === false}
+            checked={this.state.is_client === true}
             onChange={this.handleIsClient}/>
             No 
             </label><br/>
