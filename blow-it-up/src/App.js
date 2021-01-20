@@ -32,11 +32,12 @@ class App extends Component {
 
 // Authorization
   handleLogin = (info) => {
-
+    console.log(info)
+    this.handleAuthFetch(info, 'http://localhost:3000/login')
   }
 // Signup part 1
   handleSignup = (info) => {
-    console.log(info)
+    // console.log(info)
     this.handleAuthFetch(info, 'http://localhost:3000/users')
   }
 
