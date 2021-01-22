@@ -18,7 +18,7 @@ const UserPage = ({selected, arts, current}) => {
                    </div>
             }
             if (current.is_client === false){
-                <div className='userpage'>
+                return <div className='userpage'>
                 <h1>Welcome {current.full_name}!</h1>
                 <h3>Your Arts</h3>
                 {
