@@ -2,10 +2,7 @@ import React, { Component } from 'react'
 import Blowers from './Blowers'
 
 class GlassBlowerContainer extends Component {
-    state = {
-        selectedBlower: null
-    }
-
+   
     render() {
         return (
             <div className='blowers-container'>

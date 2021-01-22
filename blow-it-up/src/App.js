@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Route, Switch, withRouter, Redirect } from 'react-router-dom'
+import { Route, Switch, withRouter } from 'react-router-dom'
 import FinishSignup from './Auth/FinishSignup'
 import Form from './Auth/Form'
 import NavBar from './Containers/NavBar'
+import './App.css'
 import GlassBlowerContainer from './Containers/GlassBlowerContainer'
 import UserPage from './Containers/UserPage'
 
@@ -13,36 +14,57 @@ class App extends Component {
   state = {
     user: {
       id: '',
-      username: '',
+      username: null,
       full_name: '',
       img_url: ''
     },
     token: '',
     blowers: [],
+    arts: [],
     selectedBlower: null,
-    favoritePieces: [],
+    selectedArt: null,
+    favorites: [],
+    currentUser: null
   }
 
-// Grab the Glass Blowers
+// Grab the Glass Blowers & art_pieces
   componentDidMount() {
+    this.getArts()
     this.reAuth()
     fetch(Url)
     .then(res => res.json())
     .then(blowers => {
-      console.log(blowers)
       this.setState({
         blowers: blowers
       })
     })
   }
 
+  getArts = () => {
+    fetch('http://localhost:3000/art_pieces')
+    .then(res => res.json())
+    .then(arts => {
+      this.setState({
+        arts: arts
+      })
+    })
+  }
+
   // render components
   renderBlowers = () => <GlassBlowerContainer get={this.getBlowers()} handleChosen={this.handleChosen}/>
-  goToUser = () => <UserPage user={this.state.user} />
   renderFinishSignup = () => <FinishSignup user={this.state.user} name='Finish Sign Up!' handleSubmit={this.finishSignupSubmit} />
   getBlowers = () => {
     return this.state.blowers
   }
+  goToUser = () => {
+  return <UserPage 
+  handleHome={this.handleHome}
+  current={this.state.currentUser} 
+  selected={this.state.selectedBlower} 
+  user={this.state.user}
+  arts={this.state.arts} />
+  }
+  
   renderForms = (routerProps) => {
     console.log(routerProps)
     if (routerProps.location.pathname === '/signup'){
@@ -57,11 +79,11 @@ class App extends Component {
   // Auth
   handleSignup = (info) => {
     // console.log(info)
-    this.handleAuthFetch(info, Url)
+    this.handleAuthFetch(info, 'http://localhost:3000/users')
   }
   finishSignupSubmit = (info) => {
-    console.log(info.user.user.id)
-    let userId = info.user.user.id
+    console.log(info.user.id)
+    let userId = info.user.id
     this.handleSignupFetch(info, `http://localhost:3000/users/${userId}`)
   }
   
@@ -72,7 +94,7 @@ class App extends Component {
   
   handleLogout = () => {
     localStorage.clear()
-    this.setState({user: null}, () => {
+    this.setState({user: ''}, () => {
       this.props.history.push('/login')
     })
   }
@@ -91,7 +113,11 @@ class App extends Component {
     })
     .then(res => res.json())
     .then(data => {
-      this.setState({user: data.user, token: data.token}, () => {
+      this.setState({
+        user: data.user, 
+        token: data.token,
+        currentUser: data.user
+      }, () => {
         localStorage.setItem('token', data.token)
         this.props.history.push('/finishsignup')
       })
@@ -141,17 +167,25 @@ class App extends Component {
       if (data.error)
       console.log(data)
       else
-      this.setState({user: data.user, token: data.token}, () => {
+      this.setState({
+        user: data.user, 
+        token: data.token,
+        currentUser: data.user
+      }, () => {
         localStorage.setItem('token', data.token)
         this.props.history.push('/userprofile')
       })
     })
   }
+  // if (data.user.full_name || data.user.img_url === '')
+  // localStorage.setItem('token', data.token) && this.props.history.push('/finishsignup')
+  // else
+  // localStorage.setItem('token', data.token) && this.props.history.push('/userprofile')
   
   reAuth = () => {
     let token = localStorage.getItem('token')
     if (token) {
-      fetch('http://localhost:3000/profile', {
+      fetch('http://localhost:3000/userprofile', {
         method: 'GET', 
         headers: {
           'Content-Type':'application/json',
@@ -160,7 +194,8 @@ class App extends Component {
       })
       .then(res => res.json())
       .then(data => this.setState({
-        user: data.user
+        user: data.user,
+        currentUser: data.user 
       }))
       
     }
@@ -169,29 +204,36 @@ class App extends Component {
   handleChosen = (blower) => {
     this.setState({
       selectedBlower: blower
-    }, console.log(blower))
-   return <Redirect chosen={this.state.selectedBlower} to='/blower'/>
+    })
+   this.props.history.push('/userprofile')
   }
   
+  handleHome = (user) => {
+    console.log('Going Home')
+    this.setState({user: user, selectedBlower: null})
+    this.props.history.push('/userprofile')
+  }
+
 
 
   render(){
     return (
       <div className='app'>
-        <NavBar user={this.state.user} handleLogout={this.handleLogout} />
-        
-        <Switch>
-          <Route path='/glassblowers' exact component={this.renderBlowers} />
-          <Route path='/login' exact component={this.renderForms} />
-          <Route path='/signup' exact component={this.renderForms} />
-          <Route path='/finishsignup' exact component={this.renderFinishSignup} />
-          <Route path='/userprofile' exact component={this.goToUser} />
+        <NavBar user={this.state.user} handleLogout={this.handleLogout} handleHome={this.handleHome} />
+
+        <div className='body'>
+          <Switch>
+            <Route path='/glassblowers' exact component={this.renderBlowers} />
+            <Route path='/login' exact component={this.renderForms} />
+            <Route path='/signup' exact component={this.renderForms} />
+            <Route path='/finishsignup' exact component={this.renderFinishSignup} />
+            <Route path='/userprofile' exact component={this.goToUser} />
           {/* <Route path='/' exact component={this.renderForms} /> */}
           {/* <Form /> */}
 
-        </Switch>
-        
+          </Switch>
 
+        </div>
       </div>
     )
   }
