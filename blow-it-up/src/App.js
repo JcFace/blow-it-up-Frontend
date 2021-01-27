@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { Route, Switch, withRouter } from 'react-router-dom'
 import FinishSignup from './Auth/FinishSignup'
-import Form from './Auth/Form'
+import LoginForm from './Auth/LoginForm'
 import NavBar from './Containers/NavBar'
 import './App.css'
 import GlassBlowerContainer from './Containers/GlassBlowerContainer'
 import UserPage from './Containers/UserPage'
+
 
 const Url = 'http://localhost:3000/users'
 
@@ -16,7 +17,9 @@ class App extends Component {
       id: '',
       username: null,
       full_name: '',
-      img_url: ''
+      img_url: '',
+      lat: '',
+      lng: ''
     },
     token: '',
     blowers: [],
@@ -24,11 +27,12 @@ class App extends Component {
     selectedBlower: null,
     selectedArt: null,
     favorites: [],
-    currentUser: null
+    currentUser: {}
   }
 
 // Grab the Glass Blowers & art_pieces
   componentDidMount() {
+    this.loadFavorites()
     this.getArts()
     this.reAuth()
     fetch(Url)
@@ -50,9 +54,10 @@ class App extends Component {
     })
   }
 
-  // render components
+  // Render components
   renderBlowers = () => <GlassBlowerContainer get={this.getBlowers()} handleChosen={this.handleChosen}/>
   renderFinishSignup = () => <FinishSignup user={this.state.user} name='Finish Sign Up!' handleSubmit={this.finishSignupSubmit} />
+  renderUpdateForm = () => <FinishSignup user={this.state.user} name='Update Profile!' handleSubmit={this.finishSignupSubmit} />
   getBlowers = () => {
     return this.state.blowers
   }
@@ -62,27 +67,28 @@ class App extends Component {
   current={this.state.currentUser} 
   selected={this.state.selectedBlower} 
   user={this.state.user}
-  arts={this.state.arts} />
+  arts={this.state.arts} 
+  favorites={this.state.favorites}
+  handleFavorite={this.handleFavorite}
+  handleUnfavorite={this.handleUnfavorite}
+  handleUpdate={this.handleUpdate} />
   }
   
   renderForms = (routerProps) => {
-    console.log(routerProps)
     if (routerProps.location.pathname === '/signup'){
-      return <Form name='Sign Up' handleSubmit={this.handleSignup} />
+      return <LoginForm name='Sign Up' handleSubmit={this.handleSignup} />
     } else if (routerProps.location.pathname === '/login'){
       // console.log("logging in")
-      return <Form name='Login' handleSubmit={this.handleLogin} />
+      return <LoginForm name='Login' handleSubmit={this.handleLogin} />
     }
   }
 
   
   // Auth
   handleSignup = (info) => {
-    // console.log(info)
     this.handleAuthFetch(info, 'http://localhost:3000/users')
   }
   finishSignupSubmit = (info) => {
-    console.log(info.user.id)
     let userId = info.user.id
     this.handleSignupFetch(info, `http://localhost:3000/users/${userId}`)
   }
@@ -144,7 +150,11 @@ class App extends Component {
     })
     .then(res => res.json())
     .then(data => {
-      this.setState({user: data.user}, () => {
+      this.setState({
+        user: data.user,
+        token: data.token,
+        currentUser: data.user
+      }, () => {
         this.props.history.push('/userprofile')
       })
     })
@@ -167,21 +177,19 @@ class App extends Component {
       if (data.error)
       console.log(data)
       else
+      console.log(info)
       this.setState({
-        user: data.user, 
-        token: data.token,
+        user: data.user,
         currentUser: data.user
       }, () => {
         localStorage.setItem('token', data.token)
         this.props.history.push('/userprofile')
+        this.loadFavorites()
       })
     })
   }
-  // if (data.user.full_name || data.user.img_url === '')
-  // localStorage.setItem('token', data.token) && this.props.history.push('/finishsignup')
-  // else
-  // localStorage.setItem('token', data.token) && this.props.history.push('/userprofile')
-  
+
+  // Handling keeping user logged in during a refresh
   reAuth = () => {
     let token = localStorage.getItem('token')
     if (token) {
@@ -195,30 +203,102 @@ class App extends Component {
       .then(res => res.json())
       .then(data => this.setState({
         user: data.user,
+        token: data.token,
         currentUser: data.user 
       }))
-      
+      this.loadFavorites()
     }
   }
   
+  // Handles choosing specific glass-blower to see their page
   handleChosen = (blower) => {
     this.setState({
       selectedBlower: blower
     })
-   this.props.history.push('/userprofile')
+    this.props.history.push('/userprofile')
   }
   
+  // Home button
   handleHome = (user) => {
-    console.log('Going Home')
     this.setState({user: user, selectedBlower: null})
+    this.loadFavorites()
     this.props.history.push('/userprofile')
   }
 
+  // Functionality for adding favorites
+  handleFavorite = (userId, artId) => {
+    let token = localStorage.getItem('token')
+    if (token) {
+      fetch('http://localhost:3000/favorites', {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${token}`
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        art_piece_id: artId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      this.setState({
+        favorites: [...this.state.favorites, data]
+      })
+    })
+   }
+  }
 
+  handleUnfavorite = (userId, artId) => {
+
+    const fave = this.state.favorites.find(favorite => favorite.art_piece_id === artId)
+
+    let token = localStorage.getItem('token')
+    if (token) {
+      fetch(`http://localhost:3000/favorites/${fave.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${token}`
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        art_piece_id: artId
+      })
+    })
+    this.setState(prevState => ({
+        favorites: prevState.favorites.filter(favorite => favorite.id !== fave.id)
+    }))
+  }
+}
+// Loading user favorites at app start
+  loadFavorites = () => {
+    let token = localStorage.getItem('token')
+    if (token) {
+      fetch('http://localhost:3000/favorites', {
+        method: 'GET', 
+        headers: {
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => this.setState({
+        favorites: data
+      }))    
+  }
+}
+
+// Updating user info
+
+  handleUpdate = (info) => {
+      console.log(info)
+      this.props.history.push('/update')
+    }
 
   render(){
     return (
-      <div className='app'>
+      <div className='App'>
         <NavBar user={this.state.user} handleLogout={this.handleLogout} handleHome={this.handleHome} />
 
         <div className='body'>
@@ -228,11 +308,8 @@ class App extends Component {
             <Route path='/signup' exact component={this.renderForms} />
             <Route path='/finishsignup' exact component={this.renderFinishSignup} />
             <Route path='/userprofile' exact component={this.goToUser} />
-          {/* <Route path='/' exact component={this.renderForms} /> */}
-          {/* <Form /> */}
-
+            <Route path='/update' exact component={this.renderUpdateForm} />
           </Switch>
-
         </div>
       </div>
     )

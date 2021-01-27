@@ -1,41 +1,64 @@
 import React from 'react'
-import Map from './GoogleMap/Map'
+import Map from '../GoogleMap/Map'
 import Art from './Art'
+import UserCard from '../Containers/UserCard'
+import FavoritesContainer from '../Containers/FavoritesContainer'
+import { Container, Card } from "react-bootstrap";
 
-const UserPage = ({selected, arts, current}) => {
+const UserPage = ({selected, arts, current, handleFavorite, favorites, handleUnfavorite, handleUpdate }) => {
+        if (selected != null){
+            return  <Container className='glass-blower-container'>
+                        <Card>
+                            <Card.Title className='glass-blower'>
+                                <h1>Blown by:</h1><br/> <h1>{selected.full_name}</h1>
+                            </Card.Title>
+                                <Card.Body>
+                                    {
+                                        arts.map(a => {
+                                        if (a.creator_name === selected.full_name)
+                                            return <Art current={current} 
+                                                        handleFavorite={handleFavorite} 
+                                                        favorites={favorites} 
+                                                        key={a.id} 
+                                                        art={a}
+                                                        handleUnfavorite={handleUnfavorite}
+                                                        />
+                                                     })
+                                    }
+                                </Card.Body>
+                            </Card>
+                        <Card className='map-container' >
 
-           if (selected != null){
-           return  <div className='glass-blower'>
-                    <h1>{selected.full_name}'s Page</h1>
-                    <h3>Arts by {selected.full_name}</h3>
-                    {
-                        arts.map(a => {
-                            if (a.creator_name === selected.full_name)
-                            return <Art id={a.id} art={a}/>
+                            <Map className='google-map'  selected={selected}/>
+                        </Card>
+                   </Container>
+            }
+         else if (current.is_client === false){
+                return <div className='userpage'>
+                            <h1>Welcome {current.full_name}!</h1>
+                            <h3>Your Blows</h3>
+                        {
+                            arts.map(a => {
+                            if (a.creator_name === current.full_name)
+                            return <Art key={a.id} art={a} favorites={favorites}/>
                         })
                     }
-                    <Map />
-                   </div>
+                    <FavoritesContainer current={current} favorites={favorites} />
+                         </div>
             }
-            if (current.is_client === false){
-                return <div className='userpage'>
-                <h1>Welcome {current.full_name}!</h1>
-                <h3>Your Arts</h3>
-                {
-                    arts.map(a => {
-                        if (a.creator_name === current.full_name)
-                        return <Art id={a.id} art={a}/>
-                    })
-                }
-               </div>
-            }
-           else {
-            return <div className='userpage'>
-                    <h1>Welcome {current.full_name}!</h1>
-                   </div>
+        else {
+            return <Container className='userpage'>
+                        <div className='usercard-container'>
+                            <h1>Welcome {current.username}!</h1>
+                            <UserCard user={current} handleUpdate={handleUpdate} />
+                        </div>
+                            <div className='favorites-container'>
+                                <FavoritesContainer current={current} favorites={favorites} />
+                            </div>
+                   </Container>
            }
              
     }
-               // {this.props.user.full_name}
+    
 
 export default UserPage

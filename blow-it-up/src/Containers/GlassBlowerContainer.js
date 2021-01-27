@@ -5,11 +5,17 @@ class GlassBlowerContainer extends Component {
    
     render() {
         return (
+            <div>
+                <h1>Blowers</h1>
+
             <div className='blowers-container'>
-                <h1>Glass Blowers Page</h1>
                 {
-                    this.props.get.map(blower => <Blowers id={blower.id} blower={blower} handleChosen={this.props.handleChosen} />)
-                }
+                    this.props.get.map(blower => <Blowers 
+                        key={blower.id} 
+                        blower={blower} 
+                        handleChosen={this.props.handleChosen} />)
+                    }
+                    </div>
             </div>
         )
     }

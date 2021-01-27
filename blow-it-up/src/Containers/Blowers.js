@@ -1,13 +1,22 @@
 import React from 'react'
+import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 
-const Blowers = (props) => {
+const Blowers = ({blower, handleChosen}) => {
     return (
-        <div onClick={() => props.handleChosen(props.blower)} >
-            <h3>{props.blower.full_name}</h3>
-            <div>
-                {props.blower.img_url}
-            </div>
-        </div>
+
+        <Card className='blower-card'>
+            <Card.Img src={blower.img_url} alt='glass-blower' className='blower-image'/>
+                <Card.Body>
+                    <Card.Title>
+                        {blower.full_name}
+                    </Card.Title>
+                    <Card.Text>
+                        {blower.bio}
+                    </Card.Text>
+                    <Button onClick={() => handleChosen(blower)}>My Blows!</Button>
+                </Card.Body>
+        </Card>
     )
 }
 
