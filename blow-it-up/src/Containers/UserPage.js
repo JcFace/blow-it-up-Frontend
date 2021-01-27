@@ -27,10 +27,9 @@ const UserPage = ({selected, arts, current, handleFavorite, favorites, handleUnf
                                     }
                                 </Card.Body>
                             </Card>
-                        <Card className='map-container' >
-
+                        <div className='map-container' >
                             <Map className='google-map'  selected={selected}/>
-                        </Card>
+                        </div>
                    </Container>
             }
          else if (current.is_client === false){
@@ -52,7 +51,7 @@ const UserPage = ({selected, arts, current, handleFavorite, favorites, handleUnf
                             <h1>Welcome {current.username}!</h1>
                             <UserCard user={current} handleUpdate={handleUpdate} />
                         </div>
-                            <div className='favorites-container'>
+                            <div className='favorite-container'>
                                 <FavoritesContainer current={current} favorites={favorites} />
                             </div>
                    </Container>

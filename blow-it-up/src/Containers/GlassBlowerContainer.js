@@ -5,7 +5,7 @@ class GlassBlowerContainer extends Component {
    
     render() {
         return (
-            <div>
+            <div >
                 <h1>Blowers</h1>
 
             <div className='blowers-container'>

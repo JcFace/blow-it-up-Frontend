@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom'
 
 const NavBar = props => (
     <div className='navbar'>
+        <div className='logo'>Blow It Up</div>
             {
-                !props.user ?
+                !props.user.username ?
                 <>
                 <div>
                 <Link className='link' to='/signup'>Sign Up</Link>

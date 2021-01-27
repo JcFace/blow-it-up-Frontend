@@ -6,11 +6,11 @@ class FinishSignup extends React.Component {
 
     state = {
         user: this.props.user,
-        full_name: '',
+        full_name: this.props.user.full_name,
         is_client: true,
-        bio: '',
-        img_url: '',
-        username: ''
+        bio: this.props.user.bio,
+        img_url: this.props.user.img_url,
+        username: this.props.user.username
     }
 
     handleSubmit = (e) => {
@@ -78,6 +78,7 @@ class FinishSignup extends React.Component {
                     <Form.Control 
                         type='text' 
                         name='full_name'
+                        // defaultValue={this.props.user.full_name}
                         value={this.state.full_name} 
                         onChange={this.handleChange}/><br />
                     <Form.Label>Username: </Form.Label><br/>

@@ -1,7 +1,8 @@
 
 .navbar {
   position: fixed;
-  background: rgb(202, 133, 133);
+  background-color: #fae596;
+  /* background: rgb(202, 133, 133); */
   display: inline-flexbox;
   z-index: 9999;
   width: 100%;
@@ -17,8 +18,9 @@
 
 .body {
     margin-top: 100px;
-    background-color: rgba(175, 253, 173, 0.555);
-}
+    background-color: #3fb0ac
+    /* background-color: rgba(175, 253, 173, 0.555); */
+  }
 
 .userpage {
   display: grid;
@@ -46,9 +48,11 @@
 }
 .blowers-container {
   display: grid;
-  grid-template-columns:1fr repeat(2, 30vw) 1fr;
-  /* justify-content: center; */
-  /* align-items: center; */
+  /* grid-template-columns:1fr repeat(2, 30vw) 1fr; */
+  background-color: #dddfd4;
+  grid-gap: 5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .login-form {
@@ -72,44 +76,50 @@
 }
 
 .usercard {
+  position: fixed;
+  padding: 5px;
   width: 20vw;
   min-height: 20vw;
   justify-content: center;
   align-items: center;
-  background-color: rgba(175, 253, 173, 0.555);
+  /* background-color: rgba(175, 253, 173, 0.555); */
 }
 
 .usercard-container {
   display: grid;
   justify-content: left;
+  align-content: flex-start;
 }
 
-.favorites-container {
+.favorite-container {
   display: grid;
   justify-content: right;
+  grid-gap: 1rem;
 }
 
-/* .blower-card {
-  position: relative;
-  justify-content: center;
-  text-align: center;
-  max-width: 500px;
-  max-height: 70vw;
-} */
+.glass-blower-container {
+  background-color: #dddfd4;
+}
 
 .blower-image {
-  max-width: 25vw;
+  max-width: 15vw;
   justify-content: center;
-  text-align: center;
+  align-items: center;
 }
-/* .usercard-container {
-  
-} */
+.userpage-container {
+  background-color: #dddfd4;
+}
+
+.blower-card {
+  max-width: 50vw;
+  justify-content: center;
+  align-items: center;
+}
 
 .map-container {
+  display: inline-grid;
   max-width: 100px;
   justify-content: center;
-  align-items: stretch;
 }
 
 .google-map {
@@ -120,6 +130,13 @@
 
 .App {
   text-align: center;
-  background-color: rgba(175, 253, 173, 0.555);
+  background-color: #3fb0ac
+  /* background-color: rgba(175, 253, 173, 0.555); */
 }
 
+.logo {
+  font-style: oblique;
+  font-variant-caps: petite-caps;
+  font-size: xx-large;
+  font-weight: 900;
+}

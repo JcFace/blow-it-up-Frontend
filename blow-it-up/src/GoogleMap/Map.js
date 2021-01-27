@@ -27,6 +27,7 @@ const Map = ({selected}) => {
                     }}>
                        <div>
                             <h4>{selected.full_name}</h4>
+                            {selected.address}
                         </div> 
                 </InfoWindow>
                         )}
@@ -41,7 +42,7 @@ export default function App({selected}) {
         <div style={{width: '50vw', height: '75vh'}}>
             <Mapper 
             selected={selected}
-            googleMapURL={'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyCNNvq0aDPhzroRJJTGLg_cMbPAEnJxKGA'} 
+            googleMapURL={'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key='} 
             loadingElement={<div style={{height: '100%'}}/>}
             containerElement={<div style={{height: '100%'}}/>}
             mapElement={<div style={{height: '100%'}}/>} />

@@ -7,16 +7,16 @@ const Art = props => {
     var fave = props.favorites.find(favorite => favorite.art_piece_id === props.art.id)
     
     return (
-        <div >
-            <Card className='mb-3'>
+        <div className='arts'>
+            <Card >
               <Card.Body>
 
-                <Card.Img src={props.art.img_url} alt='fruitbowl-pic' style={{maxWidth: '50%'}}/>
                 <Card.Title>
-                    Name: {props.art.name} 
+                    {props.art.name} 
                 </Card.Title>
+                <Card.Img src={props.art.img_url} alt='art-pic' style={{maxWidth: '50%'}}/>
                     <Card.Text>
-                        Description: {props.art.description}
+                        {props.art.description}
                     </Card.Text>
                             {
                              fave ?

@@ -19,7 +19,8 @@ class App extends Component {
       full_name: '',
       img_url: '',
       lat: '',
-      lng: ''
+      lng: '',
+      address: ''
     },
     token: '',
     blowers: [],
@@ -38,6 +39,7 @@ class App extends Component {
     fetch(Url)
     .then(res => res.json())
     .then(blowers => {
+      console.log(blowers)
       this.setState({
         blowers: blowers
       })
@@ -100,7 +102,21 @@ class App extends Component {
   
   handleLogout = () => {
     localStorage.clear()
-    this.setState({user: ''}, () => {
+    this.setState({user: {
+      id: '',
+      username: null,
+      full_name: '',
+      img_url: '',
+      lat: '',
+      lng: '',
+      address: ''
+    },
+    token: '',
+    selectedBlower: null,
+    selectedArt: null,
+    favorites: [],
+    currentUser: {}
+  }, () => {
       this.props.history.push('/login')
     })
   }
